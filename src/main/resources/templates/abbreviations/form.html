@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: html(content=~{::main}, pageTitle=${isNew} ? 'New Abbreviation' : 'Edit Abbreviation')}">
+<main>
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/admin}">Abbreviations</a></li>
+            <li class="breadcrumb-item active" th:text="${isNew} ? 'New' : 'Edit'">New</li>
+        </ol>
+    </nav>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="mb-0" th:text="${isNew} ? 'New Abbreviation' : 'Edit Abbreviation'">New Abbreviation</h2>
+        </div>
+        <div class="card-body">
+            <form th:action="${isNew} ? @{/admin/abbreviations} : @{/admin/abbreviations/{id}(id=${abbreviationId})}"
+                  th:object="${abbreviation}" method="post">
+
+                <div class="mb-3">
+                    <label for="code" class="form-label">Abbreviation Code *</label>
+                    <input type="text" class="form-control" id="code" th:field="*{code}"
+                           th:classappend="${#fields.hasErrors('code')} ? 'is-invalid'"
+                           placeholder="e.g., API, HTTP, REST" required>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></div>
+                    <div class="form-text">The abbreviation itself (uppercase recommended)</div>
+                </div>
+
+                <hr>
+                <h5>Translations</h5>
+
+                <div id="translations-container">
+                    <div th:each="trans, stat : *{translations}" class="card mb-3 translation-card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <label th:for="'translations' + ${stat.index} + '.languageCode'"
+                                           class="form-label">Language *</label>
+                                    <input type="text" class="form-control"
+                                           th:id="'translations' + ${stat.index} + '.languageCode'"
+                                           th:field="*{translations[__${stat.index}__].languageCode}"
+                                           placeholder="en" maxlength="10">
+                                </div>
+                                <div class="col-md-4">
+                                    <label th:for="'translations' + ${stat.index} + '.shortDescription'"
+                                           class="form-label">Short Description *</label>
+                                    <input type="text" class="form-control"
+                                           th:id="'translations' + ${stat.index} + '.shortDescription'"
+                                           th:field="*{translations[__${stat.index}__].shortDescription}"
+                                           placeholder="Application Programming Interface">
+                                </div>
+                                <div class="col-md-6">
+                                    <label th:for="'translations' + ${stat.index} + '.longDescription'"
+                                           class="form-label">Long Description</label>
+                                    <textarea class="form-control" rows="2"
+                                              th:id="'translations' + ${stat.index} + '.longDescription'"
+                                              th:field="*{translations[__${stat.index}__].longDescription}"
+                                              placeholder="Detailed explanation..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-outline-secondary mb-3" onclick="addTranslation()">
+                    + Add Another Translation
+                </button>
+
+                <hr>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary" th:text="${isNew} ? 'Create' : 'Update'">Save</button>
+                    <a th:href="@{/admin}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        let translationIndex = /*[[${#lists.size(abbreviation.translations)}]]*/ 1;
+
+        function addTranslation() {
+            const container = document.getElementById('translations-container');
+            const card = document.createElement('div');
+            card.className = 'card mb-3 translation-card';
+            card.innerHTML = `
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label class="form-label">Language *</label>
+                            <input type="text" class="form-control"
+                                   name="translations[${translationIndex}].languageCode"
+                                   placeholder="de" maxlength="10">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Short Description *</label>
+                            <input type="text" class="form-control"
+                                   name="translations[${translationIndex}].shortDescription"
+                                   placeholder="Short description">
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">Long Description</label>
+                            <textarea class="form-control" rows="2"
+                                      name="translations[${translationIndex}].longDescription"
+                                      placeholder="Detailed explanation..."></textarea>
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="button" class="btn btn-outline-danger" onclick="this.closest('.translation-card').remove()">X</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+            translationIndex++;
+        }
+    </script>
+</main>
+</html>

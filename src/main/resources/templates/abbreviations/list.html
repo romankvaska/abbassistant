@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: html(content=~{::main}, pageTitle='Abbreviations')}">
+<main>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Abbreviations</h1>
+        <a th:href="@{/admin/abbreviations/new}" class="btn btn-primary">Add New</a>
+    </div>
+
+    <div th:if="${#lists.isEmpty(abbreviations)}" class="alert alert-info">
+        No abbreviations found. <a th:href="@{/admin/abbreviations/new}">Add one now</a>.
+    </div>
+
+    <div th:unless="${#lists.isEmpty(abbreviations)}" class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Code</th>
+                    <th>Languages</th>
+                    <th>Short Description (EN)</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="abbr : ${abbreviations}">
+                    <td>
+                        <a th:href="@{/admin/abbreviations/{id}(id=${abbr.id})}"
+                           class="fw-bold text-decoration-none" th:text="${abbr.code}">API</a>
+                    </td>
+                    <td>
+                        <span th:each="trans, stat : ${abbr.translations}"
+                              class="badge bg-secondary me-1"
+                              th:text="${trans.languageCode}">en</span>
+                    </td>
+                    <td>
+                        <span th:if="${!#lists.isEmpty(abbr.translations)}"
+                              th:text="${#lists.size(abbr.translations) > 0 ? abbr.translations[0].shortDescription : '-'}">
+                        </span>
+                    </td>
+                    <td th:text="${#temporals.format(abbr.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-01</td>
+                    <td>
+                        <a th:href="@{/admin/abbreviations/{id}(id=${abbr.id})}"
+                           class="btn btn-sm btn-outline-primary">View</a>
+                        <a th:href="@{/admin/abbreviations/{id}/edit(id=${abbr.id})}"
+                           class="btn btn-sm btn-outline-secondary">Edit</a>
+                        <form th:action="@{/admin/abbreviations/{id}/delete(id=${abbr.id})}"
+                              method="post" class="d-inline"
+                              onsubmit="return confirm('Are you sure you want to delete this abbreviation?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</html>

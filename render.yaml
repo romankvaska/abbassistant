@@ -1,0 +1,30 @@
+# Render.com Blueprint specification
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: abb-assistant
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/abbreviations
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: postgres
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: abbdb
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: abbdb
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: abbdb
+          property: password
+
+databases:
+  - name: abbdb
+    plan: free
+    databaseName: abbdb
+    user: abbuser

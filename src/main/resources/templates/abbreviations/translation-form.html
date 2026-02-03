@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: html(content=~{::main}, pageTitle='Add Translation')}">
+<main>
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/admin}">Abbreviations</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/admin/abbreviations/{id}(id=${abbreviation.id})}" th:text="${abbreviation.code}">API</a></li>
+            <li class="breadcrumb-item active">Add Translation</li>
+        </ol>
+    </nav>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="mb-0">Add Translation for <span th:text="${abbreviation.code}">API</span></h2>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/admin/abbreviations/{id}/translations(id=${abbreviation.id})}"
+                  th:object="${translation}" method="post">
+
+                <div class="mb-3">
+                    <label for="languageCode" class="form-label">Language Code *</label>
+                    <input type="text" class="form-control" id="languageCode" th:field="*{languageCode}"
+                           th:classappend="${#fields.hasErrors('languageCode')} ? 'is-invalid'"
+                           placeholder="e.g., en, de, fr, es" maxlength="10" required>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('languageCode')}" th:errors="*{languageCode}"></div>
+                    <div class="form-text">ISO 639-1 language code</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="shortDescription" class="form-label">Short Description *</label>
+                    <input type="text" class="form-control" id="shortDescription" th:field="*{shortDescription}"
+                           th:classappend="${#fields.hasErrors('shortDescription')} ? 'is-invalid'"
+                           placeholder="The full meaning of the abbreviation" required>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('shortDescription')}" th:errors="*{shortDescription}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="longDescription" class="form-label">Long Description</label>
+                    <textarea class="form-control" id="longDescription" th:field="*{longDescription}"
+                              rows="4" placeholder="Detailed explanation of the abbreviation..."></textarea>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Add Translation</button>
+                    <a th:href="@{/admin/abbreviations/{id}(id=${abbreviation.id})}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+</html>
