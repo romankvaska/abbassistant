@@ -15,7 +15,7 @@ ENV PORT=8080
 EXPOSE ${PORT}
 
 # JVM memory settings for Render free tier (512MB RAM)
-ENV JAVA_OPTS="-Xms128m -Xmx384m -XX:+UseSerialGC -XX:MaxRAM=512m"
+ENV JAVA_OPTS="-Xms64m -Xmx256m -XX:+UseSerialGC -XX:MaxMetaspaceSize=128m -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
 
 # Use shell form to expand environment variables
 CMD java $JAVA_OPTS -Dserver.port=$PORT -Dspring.profiles.active=postgres -jar app.jar

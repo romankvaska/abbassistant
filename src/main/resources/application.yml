@@ -42,11 +42,17 @@ spring:
     activate:
       on-profile: postgres
 
+  main:
+    lazy-initialization: true
+
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/dbabbassistant}
     driver-class-name: org.postgresql.Driver
     username: ${SPRING_DATASOURCE_USERNAME:usr_abbassistant}
     password: ${SPRING_DATASOURCE_PASSWORD:AA123@456}
+    hikari:
+      maximum-pool-size: 3
+      minimum-idle: 1
 
   h2:
     console:
@@ -55,6 +61,14 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    open-in-view: false
 
   thymeleaf:
     cache: true
+
+# Disable unnecessary features for lower memory
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
