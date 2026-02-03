@@ -14,4 +14,8 @@ COPY --from=build /app/target/*.jar app.jar
 ENV PORT=8080
 EXPOSE ${PORT}
 
-ENTRYPOINT ["java", "-jar", "-Dserver.port=${PORT}", "-Dspring.profiles.active=postgres", "app.jar"]
+# JVM memory settings for Render free tier (512MB RAM)
+ENV JAVA_OPTS="-Xms128m -Xmx384m -XX:+UseSerialGC -XX:MaxRAM=512m"
+
+# Use shell form to expand environment variables
+CMD java $JAVA_OPTS -Dserver.port=$PORT -Dspring.profiles.active=postgres -jar app.jar
